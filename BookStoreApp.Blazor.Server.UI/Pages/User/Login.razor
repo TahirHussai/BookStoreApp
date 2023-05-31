@@ -1,0 +1,51 @@
+﻿@page "/Login"
+@inject IClient httpClient
+@inject NavigationManager navManager
+
+<h3>Login User</h3>
+@if(string.IsNullOrEmpty(message) == false)
+{
+    <div class="alert alert-danger">
+        <p>@message</p>
+    </div>
+}
+<EditForm Model="LoginModel" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="Email">Email Address</label>
+                <InputText class="form-control" @bind-Value="LoginModel.Email" />
+                <ValidationMessage For="@(()=>LoginModel.Email)" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-control">
+                <label for="password">Password</label>
+                <InputText class="form-control" @bind-Value="LoginModel.Password" />
+                <ValidationMessage For="@(()=>LoginModel.Password)" />
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Login</button>
+</EditForm>
+@code {
+    LoginUserDto LoginModel = new LoginUserDto();
+    AuthResponse response = new AuthResponse();
+    string message = string.Empty;
+    private async Task HandleLogin()
+    { try
+        {
+            response = await httpClient.LoginAsync(LoginModel);
+            
+        }
+        catch(ApiException ex)
+        {
+            message = ex.Response;
+        }
+    }
+
+}
